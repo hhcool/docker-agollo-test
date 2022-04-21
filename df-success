@@ -1,0 +1,14 @@
+FROM golang:1.17-alpine as builder
+WORKDIR /go/delivery
+ENV GO111MODULE=on
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV GOPROXY="https://goproxy.cn,direct"
+COPY . .
+RUN go build -o app .
+
+FROM debian:buster-slim
+COPY --from=builder /go/delivery/app .
+EXPOSE 8080
+CMD ["/app"]
